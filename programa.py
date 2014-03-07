@@ -5,7 +5,7 @@ from jinja2 import Template
 import webbrowser
 import os
 
-provincias = ['Almeria','Cadiz','Cordoba','Huelva','Jaen','Malaga','Sevilla']
+provincias = ['Almeria','Granada','Cadiz','Cordoba','Huelva','Jaen','Malaga','Sevilla']
 
 f = open('template.html','r')
 web = open('web.html','w')
