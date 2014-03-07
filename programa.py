@@ -1,6 +1,6 @@
 #encoding=utf-8
 import requests
-import json
+from lxml import etree
 from jinja2 import Template
 import webbrowser
 import os
@@ -45,20 +45,24 @@ listatemp_max = []
 
 
 for provincia in provincias:
-	respuesta = requests.get('http://api.openweathermap.org/data/2.5/weather',params={'q':'%s,spain' % provincia})
-	datos = json.loads(respuesta.text)
-	viento1 = datos["wind"]["speed"]
-	orienta = datos["wind"]["deg"]
-	tempmax1 = datos['main']['temp_max']
-	tempmin1 = datos['main']['temp_min']
-	tempmax = round(tempmax1 - 273,1)
-	tempmin = round(tempmin1 - 273,1)
-	viento = round(viento1*1.61)
-	orientacion = direccion(orienta)
-	listaorientacion.append(orientacion)
+	p = {'q':provincia ,'mode':'xml','units':'metric','lang':'sp'}
+	respuesta = requests.get('http://api.openweathermap.org/data/2.5/weather',params=p)
+	datos =  etree.fromstring(respuesta.text.encode("utf-8"))
+	viento1 = datos.find("wind/speed")
+	orienta = datos.find("wind/direction")
+	temperatura = datos.find("temperature")
+	orientacion = float(orienta.attrib["value"])
+	tempmax = round(float(temperatura.attrib["max"]),1)
+	tempmin = round(float(temperatura.attrib["min"]),1)
+	viento = viento1.attrib["value"]
+	orientacion1 = direccion(orientacion)
+	listaorientacion.append(orientacion1)
 	listatemp_min.append(tempmin)
 	listatemp_max.append(tempmax)
 	listaviento.append(viento)
+	
+	
+
 
 
 template1 = Template(html)
